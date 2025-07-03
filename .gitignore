@@ -54,3 +54,7 @@ nb-configuration.xml
 .certs/
 
 *.jar
+
+.mvn/
+mvnw
+mvnw.cmd
