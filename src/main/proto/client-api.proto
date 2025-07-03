@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package client;
+
+option java_multiple_files = true;
+option java_package = "com.orta.gos.model";
+option java_outer_classname = "ClientApi";
+
+message EmptyBody {}
+
+message StringBody {
+  string body = 1;
+}
+message BinaryBody {
+  bytes body = 1;
+}
+
+enum RestMethod {
+  GET = 0;
+  HEAD = 1;
+  POST = 2;
+  PUT = 3;
+  DELETE = 4;
+  CONNECT = 5;
+  OPTIONS = 6;
+  TRACE = 7;
+  PATCH = 8;
+}
+
+message RestRequestBody {
+  string url = 1;
+  RestMethod method = 2;
+  map<string,string> headers = 3;
+  string body = 4;
+}
+
+enum ProcessStatus {
+  PROCESS_STATUS_UNSPECIFIED = 0;
+  OK = 1;
+  VALIDATION_ERROR = 2;
+  PROCESS_ERROR = 3;
+}
+
+message Payload {
+  string uuid = 1;
+  int64 creation_timestamp = 2;
+  map<string, string> attributes = 3;
+  oneof body {
+    EmptyBody empty_body = 4;
+    StringBody string_body = 5;
+    BinaryBody binary_body = 6;
+    RestRequestBody rest_request = 7;
+  }
+}
+
+message ProcessInput {
+  repeated Payload payloads = 1;
+  map<string, string> attributes = 2;
+}
+
+message ProcessOutcomeSucces {
+  Payload output_payload = 1;
+  map<string,string> headers = 2;
+}
+
+message ProcessOutcomeFailure {
+  string error_message = 1;
+}
+
+message ProcessOutcome {
+  ProcessStatus status = 1 [deprecated = true];
+  oneof outcome {
+    ProcessOutcomeFailure failure = 2;
+    ProcessOutcomeSucces success = 3;
+  }
+}
+
+service Process {
+  rpc process(ProcessInput) returns (ProcessOutcome) {}
+}

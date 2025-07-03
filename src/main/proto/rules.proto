@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package rules;
+
+option java_multiple_files = true;
+option java_package = "com.orta.gos.model.rules";
+option java_outer_classname = "Rules";
+
+message Step {
+  string name = 1;
+  string address = 2;
+  map<string,string> attributes = 3;
+  repeated BlockIndicator indicators = 4;
+  PicSelector pic_selector = 5;
+}
+
+enum BlockType {
+  TYPE_NA = 0;
+  MAIN = 1;
+  GENERAL_ERROR = 9;
+  FINALLY = 10;
+}
+
+enum BlockEdge {
+  EDGE_NA = 0;
+  START = 1;
+  END = 2;
+}
+
+message BlockIndicator {
+  BlockType type = 1;
+  BlockEdge edge = 2;
+}
+
+message BlockRange {
+  BlockType type = 1;
+  uint32 start_idx = 2;
+  uint32 end_idx = 3;
+}
+
+message Tracker {
+  uint32 current_step = 1;
+  BlockType current_block = 2;
+  bool error_raised = 3;
+  uint32 error_raised_step = 4;
+
+  map<uint32, BlockRange> ranges = 5;
+  uint32 termination = 6;
+}
+
+message PicSelectorLast {}
+
+message PicSelectorAttributes {
+  repeated PayloadAttributes payload_desc = 1;
+}
+
+message PayloadAttributes {
+  string pic_name = 1;
+  map<string,string> pic_attributes = 2;
+}
+
+message PicSelector {
+  oneof selector {
+    PicSelectorLast last_payload = 1;
+    PicSelectorAttributes by_attributes = 2;
+  }
+
+}

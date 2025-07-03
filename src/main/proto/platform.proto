@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package platform;
+
+option java_multiple_files = true;
+option java_package = "com.orta.gos.model";
+option java_outer_classname = "Platform";
+
+import "client-api.proto";
+import "rules.proto";
+
+message PlatformWorkflow {
+  repeated string selected_workflows = 1;
+  repeated rules.Step steps = 2;
+  repeated string completed_steps = 3;
+  rules.Tracker tracker = 4;
+}
+
+message PlatformMessage {
+    string id = 1;
+    int64 creationTime = 2;
+    int64 lastUpdated = 3;
+    repeated client.Payload payloads = 4;
+    map<string, string> headers = 5;
+    PlatformWorkflow workflow_log = 6;
+}
+
+message PlatformResponse {
+  string id = 1;
+  int32 status = 2;
+}
+
+service Inbound {
+  rpc handle(PlatformMessage) returns (PlatformResponse);
+}
+
+service WorkflowEnrichment {
+  rpc appendRules(PlatformMessage) returns (PlatformMessage);
+}
